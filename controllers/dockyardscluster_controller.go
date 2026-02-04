@@ -36,6 +36,7 @@ type DockyardsClusterReconciler struct {
 	*dyconfig.ConfigManager
 }
 
+// +kubebuilder:rbac:groups=dockyards.io,resources=clusters;organizations;memebers,verbs=get;list;watch
 // +kubebuilder:rbac:groups=dockyards.io,resources=clusters/status,verbs=patch
 // +kubebuilder:rbac:groups=dockyards.io,resources=workloads,verbs=create;patch;get;list;watch
 
