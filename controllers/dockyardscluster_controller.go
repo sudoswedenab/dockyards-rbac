@@ -24,12 +24,15 @@ import (
 	dyconfig "github.com/sudoswedenab/dockyards-backend/api/config"
 	dockyardsv1 "github.com/sudoswedenab/dockyards-backend/api/v1alpha3"
 	corev1 "k8s.io/api/core/v1"
+	rbacv1 "k8s.io/api/rbac/v1"
 	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	controllerutil "sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 )
+
+const RolePrefix = "dockyards:"
 
 type DockyardsClusterReconciler struct {
 	client.Client
@@ -110,53 +113,55 @@ func (r *DockyardsClusterReconciler) reconcileRBACWorkload(ctx context.Context, 
 			Namespace: &publicNamespace,
 		}
 
-		readerRole := "dockyards:" + strings.ToLower(dockyardsv1.RoleReader)
-		editorRole := "dockyards:" + strings.ToLower(dockyardsv1.RoleUser)
-		adminRole := "dockyards:" + strings.ToLower(dockyardsv1.RoleSuperUser)
+		readerRole := RolePrefix + strings.ToLower(dockyardsv1.RoleReader)
+		editorRole := RolePrefix + strings.ToLower(dockyardsv1.RoleUser)
+		adminRole := RolePrefix + strings.ToLower(dockyardsv1.RoleSuperUser)
 
-		raw, err := json.Marshal(map[string]any{
-			"clusterRoleBindings": []map[string]any{
+		input := RBACWorkloadInput{
+			ClusterRoleBindings: []RoleBinding{
 				{
-					"bindingName": readerRole,
-					"roleRef": map[string]string{
-						"kind": "ClusterRole",
-						"name": "view",
+					BindingName: readerRole,
+					RoleRef: rbacv1.RoleRef{
+						Kind: "ClusterRole",
+						Name: "view",
 					},
-					"subjects": []map[string]string{
+					Subjects: []rbacv1.Subject{
 						{
-							"kind": "Group",
-							"name": readerRole,
+							Kind: "Group",
+							Name: readerRole,
 						},
 					},
 				},
 				{
-					"bindingName": editorRole,
-					"roleRef": map[string]string{
-						"kind": "ClusterRole",
-						"name": "edit",
+					BindingName: editorRole,
+					RoleRef: rbacv1.RoleRef{
+						Kind: "ClusterRole",
+						Name: "edit",
 					},
-					"subjects": []map[string]string{
+					Subjects: []rbacv1.Subject{
 						{
-							"kind": "Group",
-							"name": editorRole,
+							Kind: "Group",
+							Name: editorRole,
 						},
 					},
 				},
 				{
-					"bindingName": adminRole,
-					"roleRef": map[string]string{
-						"kind": "ClusterRole",
-						"name": "cluster-admin",
+					BindingName: adminRole,
+					RoleRef: rbacv1.RoleRef{
+						Kind: "ClusterRole",
+						Name: "admin",
 					},
-					"subjects": []map[string]string{
+					Subjects: []rbacv1.Subject{
 						{
-							"kind": "Group",
-							"name": adminRole,
+							Kind: "Group",
+							Name: adminRole,
 						},
 					},
 				},
 			},
-		})
+		}
+
+		raw, err := json.Marshal(input)
 		if err != nil {
 			return err
 		}
