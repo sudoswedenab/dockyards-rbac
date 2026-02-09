@@ -145,6 +145,7 @@ func TestClusterReconciler(t *testing.T) {
 		adminRole := RolePrefix + strings.ToLower(dockyardsv1.RoleSuperUser)
 
 		expected := RBACWorkloadInput{
+			RoleBindings: []RoleBinding{},
 			ClusterRoleBindings: []RoleBinding{
 				{
 					BindingName: readerRole,

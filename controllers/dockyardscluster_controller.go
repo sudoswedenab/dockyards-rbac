@@ -118,6 +118,7 @@ func (r *DockyardsClusterReconciler) reconcileRBACWorkload(ctx context.Context, 
 		adminRole := RolePrefix + strings.ToLower(dockyardsv1.RoleSuperUser)
 
 		input := RBACWorkloadInput{
+			RoleBindings: []RoleBinding{},
 			ClusterRoleBindings: []RoleBinding{
 				{
 					BindingName: readerRole,
