@@ -2,20 +2,19 @@
 
 ## Component diagram
 ```mermaid
-flowchart LR
-    DockyardsRBAC["dockyards-rbac"]
-    DockyardsBackend["dockyards-backend"]
-    User
-    DockyardsCluster["dockyards.io/v1alpha3 Cluster"]
-    WorkloadFlow@{ shape: cloud, label: "workload flow" }
-    ClusterRoleBindings@{ shape: processes, label: "rbac.authorization.k8s.io/v1 ClusterRoleBinding"}
+flowchart TB
+    User@{shape: rect, label: "User"}
+    DockyardsBackend@{shape: rect, label: "dockyards-backend"}
+    DockyardsRBAC@{shape: rect, label: "dockyards-rbac"}
+    DockyardsCluster@{shape: doc, label: "dockyards.io/v1alpha3 Cluster"}
+    WorkloadFlow@{shape: cloud, label: "workload flow"}
+    ClusterRoleBindings@{shape: doc, label: "rbac.authorization.k8s.io/v1 ClusterRoleBinding"}
 
     User -->|creates through API| DockyardsBackend
     DockyardsBackend -->|creates| DockyardsCluster
     DockyardsCluster -->|is reconciled by| DockyardsRBAC
-    DockyardsRBAC -.->|triggers|WorkloadFlow
+    DockyardsRBAC -.->|triggers| WorkloadFlow
     WorkloadFlow -.->|creates and configures| ClusterRoleBindings
-
 
     subgraph Management Cluster
         subgraph dockyards-system
@@ -25,7 +24,6 @@ flowchart LR
         end
         subgraph organization
             DockyardsCluster
-
             subgraph Workload Cluster
                 ClusterRoleBindings
             end
