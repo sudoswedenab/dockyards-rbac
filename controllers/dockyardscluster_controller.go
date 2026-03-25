@@ -150,7 +150,7 @@ func (r *DockyardsClusterReconciler) reconcileRBACWorkload(ctx context.Context, 
 					BindingName: adminRole,
 					RoleRef: rbacv1.RoleRef{
 						Kind: "ClusterRole",
-						Name: "admin",
+						Name: "cluster-admin",
 					},
 					Subjects: []rbacv1.Subject{
 						{

@@ -177,7 +177,7 @@ func TestClusterReconciler(t *testing.T) {
 					BindingName: adminRole,
 					RoleRef: rbacv1.RoleRef{
 						Kind: "ClusterRole",
-						Name: "admin",
+						Name: "cluster-admin",
 					},
 					Subjects: []rbacv1.Subject{
 						{
