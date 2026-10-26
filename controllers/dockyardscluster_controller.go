@@ -91,7 +91,8 @@ func (r *DockyardsClusterReconciler) reconcileRBACWorkload(ctx context.Context, 
 		}
 
 		workload.Labels = map[string]string{
-			dockyardsv1.LabelClusterName: cluster.Name,
+			dockyardsv1.LabelClusterName:      cluster.Name,
+			dockyardsv1.LabelOrganizationName: cluster.Labels[dockyardsv1.LabelOrganizationName],
 		}
 
 		workload.OwnerReferences = []metav1.OwnerReference{
